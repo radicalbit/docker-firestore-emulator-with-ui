@@ -8,10 +8,10 @@ Container installs the firebase-toolkit from npm. It also installs the firestore
 
 # Execute container
 
-`docker run -p 8080:8080 -p 4000:4000 -p 8085:8085 -p 5001:5001 matthewkrupnik/docker-firestore-emulator-with-ui`
+`docker run -p 8080:8080 -p 4000:4000 -p 8085:8085 -p 5001:5001  tools.radicalbit.io/docker-firestore-emulator-with-ui:latest`
 
 Execute the container exposing the firestore server on the port 8200 instead of the standard 8080
-`docker run -e FIRESTORE_PORT=8200 -p 8200:8200 -p 4000:4000 -p 8085:8085 -p 5001:5001 matthewkrupnik/docker-firestore-emulator-with-ui`
+`docker run -e FIRESTORE_PORT=8200 -p 8200:8200 -p 4000:4000 -p 8085:8085 -p 5001:5001 tools.radicalbit.io/docker-firestore-emulator-with-ui:latest`
 
 # Env variables and ports
 
@@ -28,8 +28,22 @@ Execute the container exposing the firestore server on the port 8200 instead of 
 
 # Firestore
 
-To use firestore emulator the environment variable needs to be set.
-FIRESTORE_EMULATOR_HOST="localhost:8080"
+To use firestore emulator
+- the environment variable needs to be set FIRESTORE_EMULATOR_HOST="localhost:8080"
+
+OR
+
+- The firestore options should be correctly configured
+```scala
+FirebaseOptions
+  .builder()
+  .setCredentials(GoogleCredentials.newBuilder().build())
+  //Enable usage of firestore emulator
+  .setFirestoreOptions(FirestoreOptions.newBuilder().setEmulatorHost(url).build())
+  .setDatabaseUrl(url)
+  .setProjectId("dummy-project") //Use this project-id, do not change it
+  .build()
+```
 
 # PubSub
 
@@ -46,10 +60,10 @@ The container will run an npm install on the functions repository and the settin
 
 ```json
 "functions": {
-    "predeploy": [
-      "npm --prefix ./functions run lint",
-      "npm --prefix ./functions run build"
-    ],
-    "source": "functions"
-  }
+"predeploy": [
+"npm --prefix ./functions run lint",
+"npm --prefix ./functions run build"
+],
+"source": "functions"
+}
 ```
